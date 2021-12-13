@@ -1,0 +1,244 @@
+
+/* albgarci@student.42madrid.com */
+/* https://github.com/yeta1990 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+
+void	free_double(char ***map, int rows);
+char	*ft_strjoin(char const *s1, char const *s2);
+void	solve_map(int pok, char **map, char ***names, int cas);
+
+int	main(void)
+{
+	FILE	*f;
+	int		read;
+	int		cases;
+	int		pok;
+	int		rows;
+	int		cols;
+	int		i;
+	int		p;
+	int		c;
+	int		j;
+	char	**names;
+	char	s[256] = {0};
+	char	*line;
+	char	aux[101] = {0};
+	char	*map;
+	char	*aux_map;
+	size_t	len;
+
+	aux_map = 0;
+	len = 0;
+	i = 0;
+	p = 0;
+	map = 0;
+	cases = 0;
+	read = 0;
+	rows = 0;
+	cols = 0;
+	names = 0;
+	line = 0;
+	f = fopen("testInput.txt", "r");
+	if (f)
+	{
+		read = fscanf(f, "%i\n", &cases);
+		while (i < cases) //cases)
+		{
+			p = 0;
+			c = 0;
+			read = fscanf(f, "%i %i %i\n", &pok, &rows, &cols);
+		//	printf("%i %i %i\n", pok, rows, cols);
+			names = malloc(sizeof(char *) * pok);
+			while (p < pok)
+			{
+				read = fscanf(f, "%s\n", s);
+				names[p] = strdup(s);
+			//	printf("%s\n", names[p]);
+				bzero(s, 256);
+				p++;
+			}
+		//	map = malloc(sizeof(char *) * rows);
+			while (c < rows)
+			{
+				j = 0;
+				p = 0;
+				line = malloc(sizeof(char) * 300);
+				read = getline(&line, &len, f);
+				while (line && line[p])
+				{
+					while (line && line[p] == ' ')
+						p++;
+					if (line && line[p] != '\n')
+					{
+						aux[j] = line[p];
+						j++;
+					}
+					p++;
+				}
+				free(line);
+				if (!map)
+					map = strdup(aux);
+				else
+				{
+					aux_map = strdup(map);
+					free(map);
+					map = 0;
+					map = ft_strjoin(aux_map, aux);
+					free(aux_map);
+					aux_map = 0;
+				}
+				bzero(aux, 101);
+
+				c++;
+			}
+		//	printf("%s\n", map);
+			solve_map(pok, &map, &names, i);
+			free_double(&names, pok);
+			bzero(map, strlen(map));
+			map = 0;
+		//	free(map);
+			i++;
+		}
+	}
+	else
+		printf("Error loading the file\n");
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*s3;
+
+	if (!s1 || !s2)
+		return (NULL);
+	s3 = malloc(sizeof(char) * (strlen(s1) + strlen(s2) + 1));
+	if (!s3)
+		return (NULL);
+	memmove(s3, (char *)s1, strlen(s1));
+	memmove(s3 + strlen(s1), (char *)s2, strlen(s2));
+	s3[strlen(s1) + strlen(s2)] = '\0';
+	return (s3);
+}
+
+
+void	solve_map(int pok, char **map, char ***names, int cas)
+{
+	int	i;
+	int	len;
+	int	name_len;
+	int	p;
+	int	j;
+	int	z;
+	int	found;
+
+	len = 0;
+	name_len = 0;
+	i = 0;
+	p = 0;
+	j = 0;
+	z = 0;
+	found = 0;
+	while(p < pok)
+	{
+		len = strlen(*map);
+		name_len = strlen((*names)[p]);
+		i = 0;
+
+		while (i < len)
+		{
+			j = 0;
+			z = 0;
+			while (j < name_len && i + j < len)
+			{
+				if ((*map)[i + j + z] == (*names)[p][j + z])
+					j++;
+				else if ((*map)[i + j + z] == 1)
+					z++;
+				else
+				{
+					j++;
+					break ;
+				}
+			}
+			if (j == name_len)
+			{
+				j = 0;
+				z = 0;
+				while (j < name_len)
+				{
+					if ((*map)[i + j + z] != 1)
+					{
+						(*map)[i + j + z] = 1;
+ 						j++;
+					}
+					else if ((*map)[i + j + z] == 1)
+						z++;
+				}
+			//	printf("\nencontrado\n");
+				found++;
+				bzero((*names)[p], name_len);
+			}
+			j = 0;
+			z = 0;
+			while (j < name_len && i + j < len)
+			{
+				if ((*map)[i + j + z] == (*names)[p][name_len - j - z - 1])
+					j++;
+				else if ((*map)[i + j + z] == 1)
+					z++;
+				else
+				{
+					j++;
+					break ;
+				}
+			}
+			if (j == name_len)
+			{
+				j = 0;
+				z = 0;
+				while (j < name_len)
+				{
+					if ((*map)[i + j + z] != 1)
+					{
+						(*map)[i + j + z] = 1;
+ 						j++;
+					}
+					else if ((*map)[i + j + z] == 1)
+						z++;
+				}
+				found++;
+				bzero((*names)[p], name_len);
+			}
+			i++;
+		}
+		p++;
+	//	printf("found %i\n", found);
+//		if (p == pok && found != pok)
+//			p = 0;
+	}
+	i = 0;
+	printf("Case #%i: ", cas + 1);
+	while (i < len)
+	{
+		if ((*map)[i] != 1)
+			printf("%c", (*map)[i]);
+		i++;
+	}
+	printf("\n");
+}
+
+void	free_double(char ***map, int rows)
+{
+	int	c;
+
+	c = 0;
+	while (c < rows)
+	{
+		free((*map)[c]);
+		c++;
+	}
+	free(*map);
+	map = 0;
+}
