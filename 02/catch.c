@@ -31,7 +31,7 @@ int	main(void)
 	rows = 0;
 	cols = 0;
 	names = 0;
-	f = fopen("testInput.txt", "r");
+	f = fopen("submitInput.txt", "r");
 	if (f)
 	{
 		fscanf(f, "%i\n", &cases);
@@ -48,7 +48,6 @@ int	main(void)
 				p++;
 			}
 			map = create_map(rows, f);
-		//	printf("map: %s\n", map);
 			solve_map(pok, &map, &names);
 			print_case(i, &map);
 			free_double(&names, pok);
@@ -152,28 +151,21 @@ void	solve_map(int pok, char **map, char ***names)
 		len = strlen(*map);
 		name_len = strlen((*names)[p]);
 		i = 0;
-	//	printf("Looking for name %s ", (*names)[p]);
 		while (i < len)
 		{
 			j = 0;
 			z = 0;
 			while (j < name_len && i + j < len)
 			{
-			//	printf("%c", (*names)[p][j + z]);
 				if ((*map)[i + j + z] == (*names)[p][j])
 					j++;
 				else if ((*map)[i + j + z] == 1)
 					z++;
 				else
-				{
-				//	j++;
 					break ;
-				}
 			}
 			if (j == name_len)
 			{
-			//	printf("Found: %s\n", (*names)[p]);
-			//	printf("Map: %s\n", (*map));
 				j = 0;
 				z = 0;
 				while (j < name_len)
@@ -199,15 +191,10 @@ void	solve_map(int pok, char **map, char ***names)
 				else if ((*map)[i + j + z] == 1)
 					z++;
 				else
-				{
-//					j++;
 					break ;
-				}
 			}
 			if (j == name_len)
 			{
-			//	printf("Found: %s\n", (*names)[p]);
-
 				j = 0;
 				z = 0;
 				while (j < name_len)
@@ -220,7 +207,6 @@ void	solve_map(int pok, char **map, char ***names)
 					else if ((*map)[i + j + z] == 1)
 						z++;
 				}
-			//	printf("Map: %s\n", (*map));
 				found++;
 				if (found == pok)
 					return ;
